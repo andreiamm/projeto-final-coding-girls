@@ -1,0 +1,23 @@
+Comandos SQL para criação do Banco de Dados
+
+CREATE DATABASE Escola;
+
+USE Escola;
+
+CREATE TABLE Turma (
+	Id INT IDENTITY(1,1) NOT NULL,
+	Nome VARCHAR(20) NOT NULL,
+	Ativo BIT,
+	CONSTRAINT PK_Turma_Id PRIMARY KEY(Id)
+);
+
+CREATE TABLE Aluno (
+	Id INT IDENTITY(1,1) NOT NULL,
+	Nome VARCHAR(50) NOT NULL,
+	DataNascimento DATE NOT NULL,
+	Sexo CHAR(1) NOT NULL,
+	TurmaId INT NOT NULL,
+	TotalFaltas INT,
+	CONSTRAINT PK_Aluno_Id PRIMARY KEY(Id),
+	CONSTRAINT FK_Aluno_Turma FOREIGN KEY(TurmaId) REFERENCES Turma(Id)
+);
