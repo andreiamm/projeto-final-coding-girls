@@ -26,24 +26,19 @@ namespace Escola.Controllers
 
             var alunos = await _context.Aluno.ToListAsync();
 
-            List<Turma> turmas = await _context.Turma.ToListAsync();
-            StringBuilder alunoTurmaAtiva = new StringBuilder();
+            List<Aluno> alunosAtivos = alunos.Where(x => x.Turma.Ativo == true).ToList();
+            StringBuilder sb = new StringBuilder();
 
-            foreach (var aluno in alunos)
+            foreach (Aluno aluno in alunosAtivos)
             {
-                Turma turma = turmas.Find(x => x.Id == aluno.TurmaId);
-
-                if (turma != null && turma.Ativo == true)
-                {
-                    alunoTurmaAtiva.Append(ShowAluno(aluno));
-                    alunoTurmaAtiva.AppendLine($"Turma: {turma.Nome}\n");
-                }   
+                sb.Append(ShowAluno(aluno));
+                sb.AppendLine($"Turma: {aluno.Turma.Nome}\n");
             }
 
-            if (alunoTurmaAtiva.Length == 0)
-                alunoTurmaAtiva.Append("Não há turmas ativas.");
+            if (sb.Length == 0)
+                sb.Append("Não há turmas ativas.");
 
-            return Ok("Relação de alunos cuja turma está ativa:\n\n" + alunoTurmaAtiva.ToString());
+            return Ok("Relação de alunos cuja turma está ativa:\n\n" + sb.ToString());
         }
 
         // GET: api/Aluno/5
@@ -106,7 +101,7 @@ namespace Escola.Controllers
             _context.Aluno.Add(aluno);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetAluno", new { id = aluno.Id }, ShowAluno(aluno));
+            return CreatedAtAction("GetAluno", new { id = aluno.Id }, "Cadastro criado com sucesso.\n\n" + ShowAluno(aluno));
         }
 
         // DELETE: api/Aluno/5
@@ -170,7 +165,7 @@ namespace Escola.Controllers
 
         private string CheckTurma(int id, List<Turma> turmas)
         {
-            Turma turma = turmas.Find(x => x.Id == id);
+            Turma turma = (Turma)turmas.Where(x => x.Id == id);
             string status = (turma.Ativo == true) ? "ativa" : "inativa";
             return "Turma: " + turma.Nome + " (Status: " + status  + ")";
         }

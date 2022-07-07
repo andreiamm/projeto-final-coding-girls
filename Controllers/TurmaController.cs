@@ -25,18 +25,18 @@ namespace Escola.Controllers
                 return NotFound("Não há nenhuma turma cadastrada.");
 
             var turmas = await _context.Turma.ToListAsync();
-            StringBuilder turmasAtivas = new StringBuilder();
+            List<Turma> turmasAtivas = turmas.Where(x => x.Ativo == true).ToList();
+            StringBuilder sb = new StringBuilder();
 
-            foreach (var turma in turmas)
+            foreach (var turma in turmasAtivas)
             {
-                if (turma.Ativo == true)
-                    turmasAtivas.AppendLine(ShowTurma(turma));
+                    sb.AppendLine(ShowTurma(turma));
             }
 
-            if (turmasAtivas.Length == 0)
-                turmasAtivas.AppendLine("Não há turmas ativas.");
+            if (sb.Length == 0)
+                sb.AppendLine("Não há turmas ativas.");
 
-            return Ok("Relação de turmas ativas:\n\n" + turmasAtivas.ToString());
+            return Ok("Relação de turmas ativas:\n\n" + sb.ToString());
         }
 
         // GET: api/Turma/5
@@ -99,7 +99,7 @@ namespace Escola.Controllers
             else
                 return BadRequest($"Erro. A turma {turma.Nome} já está cadastrada.");
 
-            return CreatedAtAction("GetTurma", new { id = turma.Id }, ShowTurma(turma));
+            return CreatedAtAction("GetTurma", new { id = turma.Id }, "Turma criada com sucesso\n\n" + ShowTurma(turma));
         }
 
         // DELETE: api/Turma/5
